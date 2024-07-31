@@ -45,68 +45,72 @@ const DapurDashboard = () => {
 
   return (
     <div className="bg-slate-100 min-h-screen text-slate-800">
-      <header className="bg-teal-600 p-4 text-white flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Dashboard Dapur</h1>
-        <div className="relative">
-          <button
-            onClick={() => setShowNotifications(!showNotifications)}
-            className="p-2 bg-teal-500 rounded-full text-white hover:bg-teal-400 focus:outline-none focus:ring-2 focus:ring-white"
-          >
-            <Bell size={20} />
-            {unreadNotificationsCount > 0 && (
-              <span className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
-                {unreadNotificationsCount}
-              </span>
+      <div className="fixed w-full z-50">
+        <header className="bg-teal-600 p-4 text-white flex justify-between items-center relative w-full top-0 left-0">
+          <h1 className="text-2xl font-bold">Dashboard Dapur</h1>
+          <div className="relative">
+            <button
+              onClick={() => setShowNotifications(!showNotifications)}
+              className="p-2 bg-teal-500 rounded-full text-white hover:bg-teal-400 focus:outline-none focus:ring-2 focus:ring-white"
+            >
+              <Bell size={20} />
+              {unreadNotificationsCount > 0 && (
+                <span className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+                  {unreadNotificationsCount}
+                </span>
+              )}
+            </button>
+            {showNotifications && (
+              <div className="absolute right-0 mt-2 w-72 bg-white rounded-md shadow-lg z-10 text-slate-800">
+                <div className="py-2 px-4 text-sm font-medium border-b">Notifikasi</div>
+                <ul className="py-2 max-h-64 overflow-y-auto">
+                  {notifications.map((notif) => (
+                    <li 
+                      key={notif.id} 
+                      className={`px-4 py-2 hover:bg-gray-100 text-sm cursor-pointer ${notif.read ? 'text-gray-500' : 'text-teal-600 font-semibold'}`}
+                      onClick={() => handleNotificationClick(notif.id, notif.page)}
+                    >
+                      {notif.message}
+                    </li>
+                  ))}
+                  {notifications.length === 0 && (
+                    <li className="px-4 py-2 text-sm text-gray-500">Tidak ada notifikasi baru</li>
+                  )}
+                </ul>
+              </div>
             )}
-          </button>
-          {showNotifications && (
-            <div className="absolute right-0 mt-2 w-72 bg-white rounded-md shadow-lg z-10 text-slate-800">
-              <div className="py-2 px-4 text-sm font-medium border-b">Notifikasi</div>
-              <ul className="py-2 max-h-64 overflow-y-auto">
-                {notifications.map((notif) => (
-                  <li 
-                    key={notif.id} 
-                    className={`px-4 py-2 hover:bg-gray-100 text-sm cursor-pointer ${notif.read ? 'text-gray-500' : 'text-teal-600 font-semibold'}`}
-                    onClick={() => handleNotificationClick(notif.id, notif.page)}
-                  >
-                    {notif.message}
-                  </li>
-                ))}
-                {notifications.length === 0 && (
-                  <li className="px-4 py-2 text-sm text-gray-500">Tidak ada notifikasi baru</li>
-                )}
-              </ul>
-            </div>
-          )}
-        </div>
-      </header>
-      <div className="flex">
-        <aside className="w-64 bg-teal-700 text-white p-4">
-          <nav>
-            <ul>
-              {tabs.map((tab) => (
-                <li key={tab.id} className="mb-2">
-                  <button
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center w-full p-2 rounded ${
-                      activeTab === tab.id ? 'bg-teal-800' : 'hover:bg-teal-600'
-                    }`}
-                  >
-                    <tab.icon className="mr-2" size={18} />
-                    {tab.label}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        </aside>
-        <main className="flex-1 p-8">
+          </div>
+
+          <aside className="w-64 h-screen bg-teal-700 text-white p-4 absolute left-0 top-full">
+            <nav>
+                <ul>
+                  {tabs.map((tab) => (
+                    <li key={tab.id} className="mb-2">
+                      <button
+                        onClick={() => setActiveTab(tab.id)}
+                        className={`flex items-center w-full p-2 rounded ${
+                          activeTab === tab.id ? 'bg-teal-800' : 'hover:bg-teal-600'
+                        }`}
+                      >
+                        <tab.icon className="mr-2" size={18} />
+                        {tab.label}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+          </aside>
+        </header>
+      </div>
+      
+      <main className="ms-64 flex-1 h-fit bg-slate-200  pt-16">
+        <div className="w-full h-[1000px] p-10">
           {activeTab === 'menu' && <MenuHarian />}
           {activeTab === 'supply' && <SupplyMonitoring />}
           {activeTab === 'shipment' && <ShipmentTracking />}
           {activeTab === 'quality' && <QualityManagement />}
-        </main>
-      </div>
+        </div>
+      </main>
     </div>
   );
 };

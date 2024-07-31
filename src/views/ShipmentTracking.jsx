@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { CheckCircle, Bell, Package } from 'lucide-react';
+import { CheckCircle, Bell, Package, Database } from 'lucide-react';
 
 const ShipmentTracking = () => {
   const [shipments, setShipments] = useState({
@@ -25,6 +25,7 @@ const ShipmentTracking = () => {
   const [expandedShipment, setExpandedShipment] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [blockchainData, setBlockchainData] = useState([]);
 
   useEffect(() => {
     // Simulasi menerima notifikasi dari backend
@@ -32,6 +33,11 @@ const ShipmentTracking = () => {
       setNotifications([
         { id: 1, message: 'Pengiriman baru #12347 telah dibuat', isRead: false },
         { id: 2, message: 'Status pengiriman #12345 telah berubah menjadi "Dalam Perjalanan"', isRead: false },
+      ]);
+      
+      setBlockchainData([
+        { id: 'B001', timestamp: '2024-07-01T08:00:00', shippingCode: '12345', status: 'Created' },
+        { id: 'B002', timestamp: '2024-07-01T10:30:00', shippingCode: '12345', status: 'In Transit' },
       ]);
     }, 3000);
 
@@ -55,6 +61,8 @@ const ShipmentTracking = () => {
         ...prev,
         { id: Date.now(), message: `Pengiriman #${id} telah dikonfirmasi`, isRead: false }
       ]);
+      // Membuat blok baru untuk konfirmasi pengiriman
+      createNewBlock(id, 'Shipping Confirmed');
     }
   };
 
@@ -64,6 +72,16 @@ const ShipmentTracking = () => {
         notif.id === notificationId ? { ...notif, isRead: true } : notif
       )
     );
+  };
+
+  const createNewBlock = (shippingCode, status) => {
+    const newBlock = {
+      id: `B${blockchainData.length + 1}`.padStart(4, '0'),
+      timestamp: new Date().toISOString(),
+      shippingCode,
+      status
+    };
+    setBlockchainData(prev => [...prev, newBlock]);
   };
 
   const unreadNotificationsCount = notifications.filter(notif => !notif.isRead).length;
@@ -195,6 +213,51 @@ const ShipmentTracking = () => {
             </li>
           ))}
         </ul>
+      </div>
+
+      <div className="bg-white rounded-lg shadow p-4">
+        <h3 className="font-medium mb-2 flex items-center">
+          <Database size={20} className="mr-2" />
+          Blockchain Record
+        </h3>
+        <div className="overflow-x-auto">
+          <table className="min-w-full leading-normal">
+            <thead>
+              <tr>
+                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  Block ID
+                </th>
+                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  Timestamp
+                </th>
+                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  Shipping Code
+                </th>
+                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  Status
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {blockchainData.map((block) => (
+                <tr key={block.id}>
+                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                    {block.id}
+                  </td>
+                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                    {new Date(block.timestamp).toLocaleString()}
+                  </td>
+                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                    {block.shippingCode}
+                  </td>
+                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                    {block.status}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
